@@ -12,6 +12,7 @@ opencv_contrib_python
 Pillow
 PyYAML==6.0
 pyopengltk
+pypcd @ git+https://github.com/klintan/pypcd.git@144478abe12b4876567cc04cd8fc310ffa62864a
 
 # torch must be with +cu113, otherwise by default torch1.12.1 uses CUDA10.2, which doesn't support new cuda versions
 # so install with the following command

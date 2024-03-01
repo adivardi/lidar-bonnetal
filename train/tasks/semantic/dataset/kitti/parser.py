@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset
 from common.laserscan import LaserScan, SemLaserScan
 
-EXTENSIONS_SCAN = ['.bin']
+EXTENSIONS_SCAN = ['.bin', '.pcd']
 EXTENSIONS_LABEL = ['.label']
 
 

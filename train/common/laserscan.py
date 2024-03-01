@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # This file is covered by the LICENSE file in the root of this project.
 import numpy as np
+from pypcd import pypcd
 
 
 class LaserScan:
   """Class that contains LaserScan with x,y,z,r"""
-  EXTENSIONS_SCAN = ['.bin']
+  EXTENSIONS_SCAN = ['.bin', '.pcd']
 
   def __init__(self, project=False, H=64, W=1024, fov_up=3.0, fov_down=-25.0):
     self.project = project
@@ -70,6 +71,12 @@ class LaserScan:
     if not any(filename.endswith(ext) for ext in self.EXTENSIONS_SCAN):
       raise RuntimeError("Filename extension is not valid scan file.")
 
+    if filename.endswith('.bin'):
+      return self.open_scan_bin(filename)
+    elif filename.endswith('.pcd'):
+      return self.open_scan_pcd(filename)
+
+  def open_scan_bin(self, filename):
     # if all goes well, open pointcloud
     scan = np.fromfile(filename, dtype=np.float32)
     scan = scan.reshape((-1, 4))
@@ -77,6 +84,15 @@ class LaserScan:
     # put in attribute
     points = scan[:, 0:3]    # get xyz
     remissions = scan[:, 3]  # get remission
+    self.set_points(points, remissions)
+
+  def open_scan_pcd(self, filename):
+    # if all goes well, open pointcloud
+    # pcd = o3d.io.read_point_cloud(filename)
+    # points = (np.asarray(pcd.points))
+    pc = pypcd.PointCloud.from_path(filename)
+    points = np.column_stack((pc.pc_data["x"], pc.pc_data["y"], pc.pc_data["z"]))
+    remissions = pc.pc_data['intensity']
     self.set_points(points, remissions)
 
   def set_points(self, points, remissions=None):
