@@ -24,9 +24,9 @@ if __name__ == '__main__':
   parser.add_argument(
       '--log', '-l',
       type=str,
-      default=os.path.expanduser("~") + '/logs/' +
-      datetime.datetime.now().strftime("%Y-%-m-%d-%H:%M") + '/',
-      help='Directory to put the predictions. Default: ~/logs/date+time'
+      default='./logs/' +
+      datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '/',
+      help='Directory to put the predictions. Default: ./logs/date+time'
   )
   parser.add_argument(
       '--model', '-m',
