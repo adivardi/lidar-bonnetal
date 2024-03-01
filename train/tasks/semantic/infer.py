@@ -50,8 +50,9 @@ if __name__ == '__main__':
 
   # open arch config file
   try:
-    print("Opening arch config file from %s" % FLAGS.model)
-    ARCH = yaml.safe_load(open(FLAGS.model + "/arch_cfg.yaml", 'r'))
+    arch_file = FLAGS.model + "/arch_cfg.yaml"
+    print("Opening arch config file from %s" % arch_file)
+    ARCH = yaml.safe_load(open(arch_file, 'r'))
   except Exception as e:
     print(e)
     print("Error opening arch yaml file.")
@@ -59,8 +60,9 @@ if __name__ == '__main__':
 
   # open data config file
   try:
-    print("Opening data config file from %s" % FLAGS.model)
-    DATA = yaml.safe_load(open(FLAGS.model + "/data_cfg.yaml", 'r'))
+    data_cfg_file = FLAGS.model + "/data_cfg.yaml"
+    print("Opening data config file from %s" % data_cfg_file)
+    DATA = yaml.safe_load(open(data_cfg_file, 'r'))
   except Exception as e:
     print(e)
     print("Error opening data yaml file.")
@@ -70,23 +72,23 @@ if __name__ == '__main__':
   try:
     if os.path.isdir(FLAGS.log):
       shutil.rmtree(FLAGS.log)
-    os.makedirs(FLAGS.log)
-    os.makedirs(os.path.join(FLAGS.log, "sequences"))
+    os.makedirs(FLAGS.log, exist_ok=True)
+    os.makedirs(os.path.join(FLAGS.log, "sequences"), exist_ok=True)
     for seq in DATA["split"]["train"]:
       seq = '{0:02d}'.format(int(seq))
       print("train", seq)
-      os.makedirs(os.path.join(FLAGS.log, "sequences", seq))
-      os.makedirs(os.path.join(FLAGS.log, "sequences", seq, "predictions"))
+      os.makedirs(os.path.join(FLAGS.log, "sequences", seq), exist_ok=True)
+      os.makedirs(os.path.join(FLAGS.log, "sequences", seq, "predictions"), exist_ok=True)
     for seq in DATA["split"]["valid"]:
       seq = '{0:02d}'.format(int(seq))
       print("valid", seq)
-      os.makedirs(os.path.join(FLAGS.log, "sequences", seq))
-      os.makedirs(os.path.join(FLAGS.log, "sequences", seq, "predictions"))
+      os.makedirs(os.path.join(FLAGS.log, "sequences", seq), exist_ok=True)
+      os.makedirs(os.path.join(FLAGS.log, "sequences", seq, "predictions"), exist_ok=True)
     for seq in DATA["split"]["test"]:
       seq = '{0:02d}'.format(int(seq))
       print("test", seq)
-      os.makedirs(os.path.join(FLAGS.log, "sequences", seq))
-      os.makedirs(os.path.join(FLAGS.log, "sequences", seq, "predictions"))
+      os.makedirs(os.path.join(FLAGS.log, "sequences", seq), exist_ok=True)
+      os.makedirs(os.path.join(FLAGS.log, "sequences", seq, "predictions"), exist_ok=True)
   except Exception as e:
     print(e)
     print("Error creating log directory. Check permissions!")

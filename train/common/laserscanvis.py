@@ -4,9 +4,11 @@
 import vispy
 from vispy.scene import visuals, SceneCanvas
 import numpy as np
+import matplotlib
 from matplotlib import pyplot as plt
 from common.laserscan import LaserScan, SemLaserScan
 
+matplotlib.use('TKagg')
 
 class LaserScanVis:
   """Class that creates and handles a visualizer for a pointcloud"""

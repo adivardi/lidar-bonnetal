@@ -1,12 +1,16 @@
-# first apt install python3-tk
-numpy==1.14.0
+# Requires python 3.7, as newer versions only support tensorflow2
+
+# first apt install python3.7-tk python3.7-distutils
+
+numpy==1.14.5
 torchvision==0.2.2.post3
 matplotlib==2.2.3
 tensorflow==1.13.1
-scipy==0.19.1
+scipy # ==0.19.1 # caused issues, trying without specific version
 torch==1.1.0
-vispy==0.5.3
+vispy>=0.5.3    # need higher version, otherwise compains that `VisPy is not yet compatible with matplotlib 2.2+`
 opencv_python==4.1.0.25
 opencv_contrib_python==4.1.0.25
 Pillow==6.1.0
 PyYAML==5.1.1
+pyopengltk
