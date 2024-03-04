@@ -85,12 +85,16 @@ class SemanticKitti(Dataset):
       # get paths for each
       scan_path = os.path.join(self.root, seq, "velodyne")
       label_path = os.path.join(self.root, seq, "labels")
+      print(f"scans path: {scan_path}")
+      print(f"label path: {label_path}")
 
       # get files
       scan_files = [os.path.join(dp, f) for dp, dn, fn in os.walk(
           os.path.expanduser(scan_path)) for f in fn if is_scan(f)]
       label_files = [os.path.join(dp, f) for dp, dn, fn in os.walk(
           os.path.expanduser(label_path)) for f in fn if is_label(f)]
+      print(f"Scans found: {len(scan_files)}")
+      print(f"labels found: {len(label_files)}")
 
       # check all scans have labels
       if self.gt:
@@ -143,7 +147,7 @@ class SemanticKitti(Dataset):
     unproj_range = torch.full([self.max_points], -1.0, dtype=torch.float)
     unproj_range[:unproj_n_points] = torch.from_numpy(scan.unproj_range)
     unproj_remissions = torch.full([self.max_points], -1.0, dtype=torch.float)
-    unproj_remissions[:unproj_n_points] = torch.from_numpy(scan.remissions)
+    unproj_remissions[:unproj_n_points] = torch.from_numpy(scan.remissions.copy())
     if self.gt:
       unproj_labels = torch.full([self.max_points], -1.0, dtype=torch.int32)
       unproj_labels[:unproj_n_points] = torch.from_numpy(scan.sem_label)

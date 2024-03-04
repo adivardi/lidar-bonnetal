@@ -22,7 +22,7 @@ from tasks.semantic.postproc.KNN import KNN
 
 
 class User():
-  def __init__(self, ARCH, DATA, datadir, logdir, modeldir):
+  def __init__(self, ARCH, DATA, datadir, logdir, modeldir, use_ground_truth=True):
     # parameters
     self.ARCH = ARCH
     self.DATA = DATA
@@ -30,7 +30,8 @@ class User():
     self.logdir = logdir
     self.modeldir = modeldir
 
-    # get the data
+    # load parser from the folder ../tasks/semantic/dataset/{self.DATA['name']}/parser.py
+    # currently only one parser for the `kitti` dataset
     parserModule = imp.load_source("parserModule",
                                    booger.TRAIN_PATH + '/tasks/semantic/dataset/' +
                                    self.DATA["name"] + '/parser.py')
@@ -46,7 +47,7 @@ class User():
                                       max_points=self.ARCH["dataset"]["max_points"],
                                       batch_size=1,
                                       workers=self.ARCH["train"]["workers"],
-                                      gt=True,
+                                      gt=use_ground_truth,
                                       shuffle_train=False)
 
     # concatenate the encoder and the head
@@ -64,13 +65,14 @@ class User():
     # GPU?
     self.gpu = False
     self.model_single = self.model
-    self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("Infering in device: ", self.device)
     if torch.cuda.is_available() and torch.cuda.device_count() > 0:
       cudnn.benchmark = True
       cudnn.fastest = True
       self.gpu = True
       self.model.cuda()
+
+    self.device = torch.device("cuda" if self.gpu else "cpu")
+    print("Inferring in device: ", self.device)
 
   def infer(self):
     # do train set
@@ -136,7 +138,8 @@ class User():
         if torch.cuda.is_available():
           torch.cuda.synchronize()
 
-        print("Infered seq", path_seq, "scan", path_name,
+        path_name_label = os.path.splitext(path_name)[0] + ".label"
+        print("Infered seq", path_seq, "scan", path_name_label,
               "in", time.time() - end, "sec")
         end = time.time()
 
@@ -150,5 +153,5 @@ class User():
 
         # save scan
         path = os.path.join(self.logdir, "sequences",
-                            path_seq, "predictions", path_name)
+                            path_seq, "predictions", path_name_label)
         pred_np.tofile(path)

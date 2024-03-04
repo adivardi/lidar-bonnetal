@@ -19,7 +19,7 @@ if __name__ == '__main__':
       '--dataset', '-d',
       type=str,
       required=True,
-      help='Dataset to train with. No Default',
+      help='Dataset to infer on. No Default',
   )
   parser.add_argument(
       '--log', '-l',
@@ -107,5 +107,5 @@ if __name__ == '__main__':
     quit()
 
   # create user and infer dataset
-  user = User(ARCH, DATA, FLAGS.dataset, FLAGS.log, FLAGS.model)
+  user = User(ARCH, DATA, FLAGS.dataset, FLAGS.log, FLAGS.model, False)
   user.infer()
