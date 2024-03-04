@@ -2,7 +2,7 @@
 # This file is covered by the LICENSE file in the root of this project.
 import numpy as np
 from pypcd import pypcd
-
+# import open3d as o3d
 
 class LaserScan:
   """Class that contains LaserScan with x,y,z,r"""
@@ -93,6 +93,12 @@ class LaserScan:
     pc = pypcd.PointCloud.from_path(filename)
     points = np.column_stack((pc.pc_data["x"], pc.pc_data["y"], pc.pc_data["z"]))
     remissions = pc.pc_data['intensity']
+
+    # remove rows with NaN as they mess up everything (especially the projection)
+    nan_indices = np.isnan(points).any(axis=1)
+    points = points[~nan_indices]
+    remissions = remissions[~nan_indices]
+
     self.set_points(points, remissions)
 
   def set_points(self, points, remissions=None):
