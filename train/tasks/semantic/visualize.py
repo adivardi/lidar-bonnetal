@@ -59,7 +59,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--ignore_safety',
       dest='ignore_safety',
-      default=False,
+      default=True,
       action='store_true',
       help='Normally you want the number of labels and ptcls to be the same,'
       ', but if you are not done inferring this is not the case, so this disables'
@@ -124,9 +124,9 @@ if __name__ == '__main__':
         os.path.expanduser(label_paths)) for f in fn]
     label_names.sort()
 
-    # # check that there are same amount of labels and scans
-    # if not FLAGS.ignore_safety:
-    #   assert(len(label_names) == len(scan_names))
+    # check that there are same amount of labels and scans
+    if not FLAGS.ignore_safety:
+      assert(len(label_names) == len(scan_names))
 
   # create a scan
   if FLAGS.ignore_semantics:
