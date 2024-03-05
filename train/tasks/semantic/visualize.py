@@ -25,6 +25,12 @@ if __name__ == '__main__':
       help='Dataset config file. Defaults to %(default)s',
   )
   parser.add_argument(
+      '--arch_cfg', '-ac',
+      type=str,
+      required=True,
+      help='Path of the architecture yaml cfg file. See /config/arch for sample. No default',
+  )
+  parser.add_argument(
       '--sequence', '-s',
       type=str,
       default="00",
@@ -89,6 +95,14 @@ if __name__ == '__main__':
     print("Error opening yaml file.")
     quit()
 
+  try:
+    print("Opening arch config file from %s" % FLAGS.arch_cfg)
+    ARCH = yaml.safe_load(open(FLAGS.arch_cfg, 'r'))
+  except Exception as e:
+    print(e)
+    print("Error opening arch yaml file.")
+    quit()
+
   # fix sequence name
   FLAGS.sequence = '{0:02d}'.format(int(FLAGS.sequence))
 
@@ -128,12 +142,24 @@ if __name__ == '__main__':
     if not FLAGS.ignore_safety:
       assert(len(label_names) == len(scan_names))
 
+  # extract sensor config from arch cfg file
+  sensor_cfg = ARCH["dataset"]["sensor"]
+  img_H = sensor_cfg["img_prop"]["height"]
+  img_W = sensor_cfg["img_prop"]["width"]
+  fov_up = sensor_cfg["fov_up"]
+  fov_down = sensor_cfg["fov_down"]
+
+  print(f"sensor_img_H: {img_H}")
+  print(f"sensor_img_W: {img_W}")
+  print(f"sensor_fov_up: {fov_up}")
+  print(f"sensor_fov_down: {fov_down}")
+
   # create a scan
   if FLAGS.ignore_semantics:
-    scan = LaserScan(project=True)  # project all opened scans to spheric proj
+    scan = LaserScan(project=True, H=img_H, W=img_W, fov_up=fov_up, fov_down=fov_down)  # project all opened scans to spheric proj
   else:
     color_dict = CFG["color_map"]
-    scan = SemLaserScan(color_dict, project=True)
+    scan = SemLaserScan(color_dict, project=True, H=img_H, W=img_W, fov_up=fov_up, fov_down=fov_down)
 
   # create a visualizer
   semantics = not FLAGS.ignore_semantics

@@ -46,6 +46,11 @@ class SemanticKitti(Dataset):
     self.max_points = max_points
     self.gt = gt
 
+    print(f"sensor_img_H: {self.sensor_img_H}")
+    print(f"sensor_img_W: {self.sensor_img_W}")
+    print(f"sensor_fov_up: {self.sensor_fov_up}")
+    print(f"sensor_fov_down: {self.sensor_fov_down}")
+
     # get number of classes (can't be len(self.learning_map) because there
     # are multiple repeated entries, so the number that matters is how many
     # there are for the xentropy)
@@ -168,9 +173,13 @@ class SemanticKitti(Dataset):
     proj_x[:unproj_n_points] = torch.from_numpy(scan.proj_x)
     proj_y = torch.full([self.max_points], -1, dtype=torch.long)
     proj_y[:unproj_n_points] = torch.from_numpy(scan.proj_y)
+
+    # this will be the input to the model
+    # The input has size [1, 5, 64, 1024]  (5 = channels (range, x, y, z, remission), 64x1024 = range image size),
     proj = torch.cat([proj_range.unsqueeze(0).clone(),
                       proj_xyz.clone().permute(2, 0, 1),
                       proj_remission.unsqueeze(0).clone()])
+    # normalize the input
     proj = (proj - self.sensor_img_means[:, None, None]
             ) / self.sensor_img_stds[:, None, None]
     proj = proj * proj_mask.float()

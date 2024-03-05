@@ -35,6 +35,12 @@ if __name__ == '__main__':
       default=None,
       help='Directory to get the trained model.'
   )
+  parser.add_argument(
+      '--arch_cfg', '-ac',
+      type=str,
+      default='arch_cfg.yaml',
+      help='Name of the architecture yaml cfg file, within the model folder. See /config/arch for sample. Default is arch_cfg.yaml',
+  )
   FLAGS, unparsed = parser.parse_known_args()
 
   # print summary of what we will do
@@ -50,7 +56,7 @@ if __name__ == '__main__':
 
   # open arch config file
   try:
-    arch_file = FLAGS.model + "/arch_cfg.yaml"
+    arch_file = FLAGS.model + "/" + FLAGS.arch_cfg
     print("Opening arch config file from %s" % arch_file)
     ARCH = yaml.safe_load(open(arch_file, 'r'))
   except Exception as e:
