@@ -75,13 +75,14 @@ class LaserScanVis:
       # self.inst_view.camera.link(self.scan_view.camera)
 
     # img canvas size
-    self.multiplier = 1
+    self.vertical_zoom = 2
+    self.multiplier = self.vertical_zoom
     self.canvas_W = 1024
     self.canvas_H = 64
     if self.semantics:
-      self.multiplier += 1
+      self.multiplier += self.multiplier
     if self.instances:
-      self.multiplier += 1
+      self.multiplier += self.multiplier
 
     # new canvas for img
     self.img_canvas = SceneCanvas(keys='interactive', show=True,
@@ -180,16 +181,17 @@ class LaserScanVis:
     # print(data.max(), data.min())
     data = (data - data[data > 0].min()) / \
         (data.max() - data[data > 0].min())
-    # print(data.max(), data.min())
+    print(data.max(), data.min())
+    data = np.repeat(data, self.vertical_zoom, axis=0)
     self.img_vis.set_data(data)
     self.img_vis.update()
 
     if self.semantics:
-      self.sem_img_vis.set_data(self.scan.proj_sem_color[..., ::-1])
+      self.sem_img_vis.set_data(np.repeat(self.scan.proj_sem_color[..., ::-1], self.vertical_zoom, axis=0))
       self.sem_img_vis.update()
 
     if self.instances:
-      self.inst_img_vis.set_data(self.scan.proj_inst_color[..., ::-1])
+      self.inst_img_vis.set_data(np.repeat(self.scan.proj_inst_color[..., ::-1], self.vertical_zoom, axis=0))
       self.inst_img_vis.update()
 
   # interface
