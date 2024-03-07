@@ -76,6 +76,7 @@ class LaserScanVis:
 
     # img canvas size
     self.vertical_zoom = 2
+    self.horizontal_zoom = 2
     self.multiplier = self.vertical_zoom
     self.canvas_W = 1024
     self.canvas_H = 64
@@ -86,7 +87,7 @@ class LaserScanVis:
 
     # new canvas for img
     self.img_canvas = SceneCanvas(keys='interactive', show=True,
-                                  size=(self.canvas_W, self.canvas_H * self.multiplier))
+                                  size=(self.canvas_W * self.horizontal_zoom, self.canvas_H * self.multiplier))
     # grid
     self.img_grid = self.img_canvas.central_widget.add_grid()
     # interface (n next, b back, q quit, very simple)
@@ -183,15 +184,20 @@ class LaserScanVis:
         (data.max() - data[data > 0].min())
     print(data.max(), data.min())
     data = np.repeat(data, self.vertical_zoom, axis=0)
+    data = np.repeat(data, self.horizontal_zoom, axis=1)
     self.img_vis.set_data(data)
     self.img_vis.update()
 
     if self.semantics:
-      self.sem_img_vis.set_data(np.repeat(self.scan.proj_sem_color[..., ::-1], self.vertical_zoom, axis=0))
+      sem_data = np.repeat(self.scan.proj_sem_color[..., ::-1], self.vertical_zoom, axis=0)
+      sem_data = np.repeat(sem_data, self.horizontal_zoom, axis=1)
+      self.sem_img_vis.set_data(sem_data)
       self.sem_img_vis.update()
 
     if self.instances:
-      self.inst_img_vis.set_data(np.repeat(self.scan.proj_inst_color[..., ::-1], self.vertical_zoom, axis=0))
+      inst_data = np.repeat(self.scan.proj_inst_color[..., ::-1], self.vertical_zoom, axis=0)
+      inst_data = np.repeat(inst_data, self.horizontal_zoom, axis=1)
+      self.inst_img_vis.set_data(inst_data)
       self.inst_img_vis.update()
 
   # interface

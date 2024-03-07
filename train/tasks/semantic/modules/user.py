@@ -86,7 +86,7 @@ class User():
     self.infer_subset(loader=self.parser.get_test_set(),
                       to_orig_fn=self.parser.to_original)
 
-    print('Finished Infering')
+    print(f'Finished Infering. Saved results to {self.logdir}')
 
     return
 
