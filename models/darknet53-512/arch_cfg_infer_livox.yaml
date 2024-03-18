@@ -1,0 +1,160 @@
+################################################################################
+# training parameters
+################################################################################
+train:
+  loss: "xentropy"       # must be either xentropy or iou
+  max_epochs: 150
+  lr: 0.01               # sgd learning rate
+  wup_epochs: 1          # warmup during first XX epochs (can be float)
+  momentum: 0.9          # sgd momentum
+  lr_decay: 0.99         # learning rate decay per epoch after initial cycle (from min lr)
+  w_decay: 0.0001        # weight decay
+  batch_size: 16         # batch size
+  report_batch: 1        # every x batches, report loss
+  report_epoch: 1        # every x epochs, report validation set
+  epsilon_w: 0.001       # class weight w = 1 / (content + epsilon_w)
+  save_summary: False    # Summary of weight histograms for tensorboard
+  save_scans: True       # False doesn't save anything, True saves some
+                         # sample images (one per batch of the last calculated batch)
+                         # in log folder
+  show_scans: False      # show scans during training
+  workers: 12            # number of threads to get data
+
+################################################################################
+# backbone parameters
+################################################################################
+backbone:
+  name: "darknet"  # ['squeezeseg', 'squeezesegV2', 'darknet']
+  input_depth:
+    range: True
+    xyz: True
+    remission: True
+  dropout: 0.05
+  bn_d: 0.01
+  OS: 32 # output stride (only horizontally)
+  train: False # train backbone?
+  extra:
+    layers: 53
+
+################################################################################
+# decoder parameters
+################################################################################
+decoder:
+  name: "darknet"
+  dropout: 0.05
+  bn_d: 0.01
+  train: False # train decoder?
+  extra: False # nothing to add for this decoder, otherwise this is a dict
+
+################################################################################
+# classification head parameters
+################################################################################
+head:
+  name: "segmentation"
+  train: False
+  dropout: 0.05
+
+################################################################################
+# postproc parameters
+################################################################################
+post:
+  CRF:
+    use: False
+    train: False
+    params: False # this should be a dict when in use
+  KNN:
+    use: True
+    params:
+      knn: 5
+      search: 5
+      sigma: 1.0
+      cutoff: 1.0
+
+################################################################################
+# classification head parameters
+################################################################################
+# dataset (to find parser)
+dataset:
+  labels: "kitti"
+  scans: "kitti"
+  max_points: 276000 # max of any scan in dataset
+  sensor:
+    name: "HDL64"
+    type: "spherical" # projective
+    img_prop:
+      width: 512
+      height: 64
+
+    # --baselink no accum no cut
+    # fov_up: 75 # 61   # 50 # 70
+    # fov_down: -3.7 # -7.6  # -5 # -70
+    # img_means:
+    #   - 7.73788749694824
+    #   - 0.6764920353889465
+    #   - 0.24490511417388916
+    #   - 1.4684832096099854
+    #   - 19.85088348388672
+    # img_stds:
+    #   - 6.941041469573975
+    #   - 7.552706241607666
+    #   - 6.3844990730285645
+    #   - 2.748955249786377
+    #   - 25.087844848632812
+    # # --baselink no accum cut 0-40
+    # fov_up: 40
+    # fov_down: 0
+    # img_means:
+    #   - 10.235683296029508
+    #   - 0.3803434657527387
+    #   - -0.06824282984340947
+    #   - 2.1094052647004955
+    #   - 23.32079030115113
+    # img_stds:
+    #   - 7.968559642151685
+    #   - 9.46742917348913
+    #   - 8.034910213158629
+    #   - 3.0783517045027216
+    #   - 27.610837996275485
+    # --baselink accum 5 cut 0-40
+    fov_up: 40
+    fov_down: 0
+    img_means:  # calibrated on entire bag `173257c72c_2023-10-23-11-01-57.bag`
+      - 9.723654790345286
+      - 0.22586716500481865
+      - 0.18324022505370408
+      - 2.0060830607302935
+      - 26.29780745242543
+    img_stds:
+      - 7.890290381594946
+      - 9.15931440500205
+      - 7.800183178607876
+      - 2.821574843556613
+      - 29.04069778307193
+    # # --baselink accum no cut
+    # fov_up: 71.277
+    # fov_down: -5.81
+    # img_means: #range,x,y,z,signal
+    #   - 7.103207
+    #   - 0.49242175
+    #   - 0.2649827
+    #   - 1.4299009
+    #   - 23.505268
+    # img_stds: #range,x,y,z,signal
+    #   - 6.3274198
+    #   - 7.244807
+    #   - 5.5961637
+    #   - 2.0809138
+    #   - 29.421082
+    # --baselink accum cut
+    # img_means: #range,x,y,z,signal
+    #   - 8.285834312438965
+    #   - 0.1916898638010025
+    #   - -1.6949604749679565
+    #   - 2.537717580795288
+    #   - 39.72568893432617
+    # img_stds: #range,x,y,z,signal
+    #   - 7.087150573730469
+    #   - 7.3130106925964355
+    #   - 6.573203086853027
+    #   - 3.584132671356201
+    #   - 44.208316802978516
