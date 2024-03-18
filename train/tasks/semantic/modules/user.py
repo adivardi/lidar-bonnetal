@@ -20,6 +20,7 @@ import numpy as np
 from tasks.semantic.modules.segmentator import *
 from tasks.semantic.postproc.KNN import KNN
 
+VIS_INPUT = False
 
 class User():
   def __init__(self, ARCH, DATA, datadir, logdir, modeldir, use_ground_truth=True):
@@ -120,6 +121,17 @@ class User():
             unproj_range = unproj_range.cuda()
 
         # compute output
+        # input is the projected range image (with 5 channels [range, x, y, z, remission] and a mask
+        # the mask is only used if CRF is used
+        if VIS_INPUT:
+          # range_image = proj_in[0, 0].cpu().numpy()
+          # add multiple images to the same window
+          for i in range(proj_in.shape[1]):
+            channel_image = proj_in[0, i].cpu().numpy()
+            cv2.imshow(f"Channel {i}", channel_image)
+          cv2.waitKey(0)
+
+          cv2.destroyAllWindows()
         proj_output = self.model(proj_in, proj_mask)
         proj_argmax = proj_output[0].argmax(dim=0)
 
